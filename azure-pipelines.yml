@@ -1,0 +1,22 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  acrName: venkatlabacr123
+  imageName: sampleapp
+
+steps:
+- script: echo "Starting pipeline..."
+
+- task: AzureCLI@2
+  inputs:
+    azureSubscription: 'svc-conn-lab-azure'
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az acr login --name $(acrName)
+      docker build -t $(acrName).azurecr.io/$(imageName):latest tomcat
+      docker push $(acrName).azurecr.io/$(imageName):latest
